@@ -24,7 +24,9 @@ pipeline {
             steps {
                 sh '''
                 echo "Test Stage"
-                test -f /build/index.html
+                echo "$(pwd)"
+                test -f jenkins-app/build/index.html
+                ls 
                 '''
             }
         }        
