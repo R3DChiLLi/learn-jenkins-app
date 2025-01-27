@@ -24,6 +24,8 @@ pipeline {
             steps {
                 sh '''
                 echo "Test Stage"
+                echo "$(pwd)"
+                test -f build/index.html
                 '''
             }
         }        
