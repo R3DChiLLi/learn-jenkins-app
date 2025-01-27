@@ -27,6 +27,7 @@ pipeline {
                 echo "$(pwd)"
                 test -f build/index.html
                 ls -l
+                npm test
                 '''
             }
         }        
