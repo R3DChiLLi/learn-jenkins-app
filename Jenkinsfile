@@ -74,7 +74,26 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+// Staging Environment 
+        stage('Staging Env') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                npm install netlify-cli s
+                node_modules/.bin/netlify --version
+                echo "Deploying to Staging Env... Site-ID: $NETLIFY_SITE_ID"
+                node_modules/.bin/netlify deploy --dir=build
+                '''
+            }
+        }
+
+//Prod Environment Deploying
+        stage('Prod Deploy') {
             agent {
                 docker {
                     image 'node:18-alpine'
