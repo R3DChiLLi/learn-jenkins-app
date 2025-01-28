@@ -92,7 +92,17 @@ pipeline {
             }
         }
 
-//Prod Environment Deploying
+// Approval Stage 
+        stage('Aprroval') {
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                    input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
+                }
+            }
+        }
+
+
+// Prod Environment Deploying
         stage('Prod Deploy') {
             agent {
                 docker {
