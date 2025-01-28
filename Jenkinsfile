@@ -37,7 +37,7 @@ pipeline {
                     }
                     steps {
                         sh '''
-                        echo "Test Stage"
+                        echo "Testing Stage"
                         echo "$(pwd)"
                         test -f build/index.html
                         ls -l
