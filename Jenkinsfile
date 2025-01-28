@@ -7,24 +7,24 @@ pipeline {
     }
 
     stages {
-        // stage('Build') {
-        //     agent {
-        //         docker {
-        //             image 'node:18-alpine'
-        //             reuseNode true
-        //         }
-        //     }
-        //     steps {
-        //         sh '''
-        //         ls -la
-        //         node --version
-        //         npm --version
-        //         npm ci
-        //         npm run build
-        //         ls -la
-        //         '''
-        //     }
-        // }
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                ls -la
+                node --version
+                npm --version
+                npm ci
+                npm run build
+                ls -la
+                '''
+            }
+        }
         stage('Tests')
         {
             parallel {
@@ -87,7 +87,7 @@ pipeline {
                 npm install netlify-cli s
                 node_modules/.bin/netlify --version
                 echo "Deploying to Staging Env... Site-ID: $NETLIFY_SITE_ID"
-                node_modules/.bin/netlify deploy --dir=build
+                node_modules/.bin/netlify deploy --dir=build --json > deploy-output.txt
                 '''
             }
         }
