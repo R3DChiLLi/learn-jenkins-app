@@ -105,17 +105,6 @@ pipeline {
         }
 
 
-
-// Approval Stage 
-        stage('Aprroval') {
-            steps {
-                timeout(time: 15, unit: 'MINUTES') {
-                    input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
-                }
-            }
-        }
-
-
 // Prod Environment Testing And Deploying
         stage('Prod Test And Deploy') {
             agent {
