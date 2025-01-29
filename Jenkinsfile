@@ -88,10 +88,38 @@ pipeline {
                 node_modules/.bin/netlify --version
                 echo "Deploying to Staging Env... Site-ID: $NETLIFY_SITE_ID"
                 node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                node_modules/.bin/node-jq '.deploy_url' deploy-output.json
                 '''
+                script {
+                    // Capture the output of the jq command and trim any extra whitespace (like newlines)
+                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq '.deploy_url' deploy-output.json", returnStdout: true).trim()
+                }
             }
         }
+
+// Staging E2E
+        stage('Staging E2E') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+            environment {
+                CI_ENVIRONMENT_URL = "$env.STAGING_URL"
+            }
+            steps {
+                sh '''
+                npx playwright test --reporter=html
+                '''
+            }
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Prod E2E Report', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
+        }
+
+
 
 // Approval Stage 
         stage('Aprroval') {
@@ -138,7 +166,7 @@ pipeline {
             }
             post {
                 always {
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Prod E2E Report', reportTitles: '', useWrapperFileDirectly: true])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Prod E2E Report', reportTitles: '', useWrapperFileDirectly: true])
                 }
             }
         }
