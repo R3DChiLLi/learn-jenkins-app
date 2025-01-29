@@ -3,28 +3,29 @@ pipeline {
 
     environment {
         NETLIFY_SITE_ID = '339ff62d-959d-4e7b-a397-631a4ba894db'
-        NETLIFY_AUTH_TOKEN = credentials('netlify-id') 
+        NETLIFY_AUTH_TOKEN = credentials('netlify-id')
+        REACT_APP_VERSION = "1.0.$BUILD_ID"
     }
 
     stages {
-        // stage('Build') {
-        //     agent {
-        //         docker {
-        //             image 'node:18-alpine'
-        //             reuseNode true
-        //         }
-        //     }
-        //     steps {
-        //         sh '''
-        //         ls -la
-        //         node --version
-        //         npm --version
-        //         npm ci
-        //         npm run build
-        //         ls -la
-        //         '''
-        //     }
-        // }
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                ls -la
+                node --version
+                npm --version
+                npm ci
+                npm run build
+                ls -la
+                '''
+            }
+        }
         stage('Tests')
         {
             parallel {
