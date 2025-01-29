@@ -91,7 +91,7 @@ pipeline {
                 '''
                 script {
                     // Capture the output of the jq command and trim any extra whitespace (like newlines)
-                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq '.deploy_url' deploy-output.json", returnStdout: true).trim()
+                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true).trim()
                 }
             }
         }
@@ -105,11 +105,11 @@ pipeline {
                 }
             }
             environment {
-                CI_ENVIRONMENT_URL = "$env.STAGING_URL"
+                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
             }
             steps {
                 sh '''
-                echo "Staging URL is: $(CI_ENVIRONMENT_URL)"
+                npx playwright test --reporter=html
                 '''
             }
             post {
@@ -118,7 +118,7 @@ pipeline {
                 }
             }
         }
-//npx playwright test --reporter=html
+
 
 
 // Approval Stage 
