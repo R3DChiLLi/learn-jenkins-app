@@ -67,7 +67,7 @@ pipeline {
                     }
                     post {
                         always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright local Report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'local Report E2E', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
                 }
@@ -114,7 +114,7 @@ pipeline {
             }
             post {
                 always {
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Prod E2E Report', reportTitles: '', useWrapperFileDirectly: true])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E Report', reportTitles: '', useWrapperFileDirectly: true])
                 }
             }
         }
@@ -131,25 +131,8 @@ pipeline {
         }
 
 
-// Prod Environment Deploying
-        stage('Prod Deploy') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                npm install netlify-cli s
-                node_modules/.bin/netlify --version
-                echo "Deploying to Production... Site-ID: $NETLIFY_SITE_ID"
-                node_modules/.bin/netlify deploy --dir=build --prod
-                '''
-            }
-        }
-
-        stage('Prod E2E') {
+// Prod Environment Testing And Deploying
+        stage('Prod Test And Deploy') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -161,6 +144,11 @@ pipeline {
             }
             steps {
                 sh '''
+                node --version
+                npm install netlify-cli s
+                node_modules/.bin/netlify --version
+                echo "Deploying to Production... Site-ID: $NETLIFY_SITE_ID"
+                node_modules/.bin/netlify deploy --dir=build --prod
                 npx playwright test --reporter=html
                 '''
             }
