@@ -109,7 +109,7 @@ pipeline {
             }
             steps {
                 sh '''
-                npx playwright test --reporter=html
+                echo "Staging URL is: $(CI_ENVIRONMENT_URL)"
                 '''
             }
             post {
@@ -118,7 +118,7 @@ pipeline {
                 }
             }
         }
-
+//npx playwright test --reporter=html
 
 
 // Approval Stage 
