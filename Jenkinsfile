@@ -93,9 +93,6 @@ pipeline {
                     // Capture the output of the jq command and trim any extra whitespace (like newlines)
                     env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true).trim()
                 }
-                sh '''
-                echo "Staging_URL is: $env.STAGING_URL"
-                '''
             }
         }
 
@@ -108,7 +105,7 @@ pipeline {
                 }
             }
             environment {
-                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+                CI_ENVIRONMENT_URL = "$env.STAGING_URL"
             }
             steps {
                 sh '''
