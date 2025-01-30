@@ -20,7 +20,7 @@ pipeline {
             steps {
                 sh '''
                 
-                echo "<h1>hello world</h1>" | aws s3 cp - s3://main-pics-bucket-zahan/index.html
+                echo "<h1>hello world</h1>" | aws s3 cp - s3://bucket-for-jenkins123/index.html
                 '''
             }
         }
