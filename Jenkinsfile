@@ -14,7 +14,7 @@ pipeline {
                     image 'amazon/aws-cli'
                     // Fix 1: Correctly format Docker arguments (split flags properly)
                     // Fix 2: Add --network=host to access EC2 metadata service
-                    args "--rm --entrypoint=''"
+                    args "--rm --entrypoint='' --network=host"
                 }
             }
             steps {
