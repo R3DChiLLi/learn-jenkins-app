@@ -20,7 +20,7 @@ pipeline {
             steps {
                 sh '''
                 
-                echo "hello world" | aws s3 cp - s3://amzn-s3-demo-bucket/file1.txt
+                echo "hello world" | aws s3 cp - s3://zahan-s3-v1/file1.txt
                 '''
             }
         }
