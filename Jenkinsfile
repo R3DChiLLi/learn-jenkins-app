@@ -8,23 +8,6 @@ pipeline {
     }
 
     stages {
-        stage("AWS") {
-            agent {
-                docker {
-                    image 'amazon/aws-cli'
-                    // Fix 1: Correctly format Docker arguments (split flags properly)
-                    // Fix 2: Add --network=host to access EC2 metadata service
-                    args "--rm --entrypoint='' --network=host"
-                }
-            }
-            steps {
-                sh '''
-                
-                echo "<h1>hello world</h1>" | aws s3 cp - s3://bucket-for-jenkins123/index.html
-                '''
-            }
-        }
-
         stage('Build') {
             agent {
                 docker {
@@ -43,6 +26,21 @@ pipeline {
                 '''
             }
         }
+
+        stage("AWS") {
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    args "--rm --entrypoint='' --network=host"
+                }
+            }
+            steps {
+                sh '''
+                aws s3 sync build s3://bucket-for-jenkins123/index.html
+                '''
+            }
+        }
+
         stage('Tests')
         {
             parallel {
