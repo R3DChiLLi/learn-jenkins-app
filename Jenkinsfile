@@ -8,6 +8,18 @@ pipeline {
     }
 
     stages {
+        stage("AWS") {
+            agent {
+                docker {
+                    image 'amazon/aws-cli:latest'
+                }
+            }
+            steps {
+                sh '''
+                aws s3 ls
+                '''
+            }
+        }
         stage('Build') {
             agent {
                 docker {
