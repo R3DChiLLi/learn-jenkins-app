@@ -11,14 +11,12 @@ pipeline {
         stage("AWS") {
             agent {
                 docker {
-                    image 'amazon/aws-cli:latest'
-                    args "--entrypoint=''"
+                    image 'amazon/aws-cli'
+                    args "--rm --entrypoint='' --network=host"
                 }
             }
             steps {
-                sh '''
-                aws s3 ls
-                '''
+                sh 'aws s3 ls'
             }
         }
         stage('Build') {
