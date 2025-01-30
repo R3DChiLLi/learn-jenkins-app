@@ -37,7 +37,7 @@ pipeline {
             }
             steps {
                 sh '''
-                aws s3 sync build s3://bucket-for-jenkins123/index.html
+                aws s3 sync build s3://bucket-for-jenkins123
                 '''
             }
         }
