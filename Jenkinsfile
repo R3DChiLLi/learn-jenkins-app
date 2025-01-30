@@ -18,29 +18,31 @@ pipeline {
                 }
             }
             steps {
-                // Fix 3: Remove 'aws' prefix since we override the entrypoint
-                sh 'aws s3 ls'
-            }
-        }
-
-        stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
                 sh '''
-                ls -la
-                node --version
-                npm --version
-                npm ci
-                npm run build
-                ls -la
+                
+                echo "hello world" | aws s3 cp - s3://amzn-s3-demo-bucket/file1.txt
                 '''
             }
         }
+
+        // stage('Build') {
+        //     agent {
+        //         docker {
+        //             image 'node:18-alpine'
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //         ls -la
+        //         node --version
+        //         npm --version
+        //         npm ci
+        //         npm run build
+        //         ls -la
+        //         '''
+        //     }
+        // }
         stage('Tests')
         {
             parallel {
