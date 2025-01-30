@@ -8,20 +8,20 @@ pipeline {
     }
 
     stages {
-        // stage("AWS") {
-        //     agent {
-        //         docker {
-        //             image 'amazon/aws-cli'
-        //             // Fix 1: Correctly format Docker arguments (split flags properly)
-        //             // Fix 2: Add --network=host to access EC2 metadata service
-        //             args "--rm --entrypoint= --network=host"
-        //         }
-        //     }
-        //     steps {
-        //         // Fix 3: Remove 'aws' prefix since we override the entrypoint
-        //         sh 'aws s3 ls'
-        //     }
-        // }
+        stage("AWS") {
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    // Fix 1: Correctly format Docker arguments (split flags properly)
+                    // Fix 2: Add --network=host to access EC2 metadata service
+                    args "--rm --entrypoint=''"
+                }
+            }
+            steps {
+                // Fix 3: Remove 'aws' prefix since we override the entrypoint
+                sh 'aws s3 ls'
+            }
+        }
 
         stage('Build') {
             agent {
