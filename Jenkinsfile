@@ -5,9 +5,7 @@ pipeline {
         NETLIFY_SITE_ID = '339ff62d-959d-4e7b-a397-631a4ba894db'
         NETLIFY_AUTH_TOKEN = credentials('netlify-id')
         REACT_APP_VERSION = "1.0.$BUILD_ID"
-        SONAR_HOST_URL = "http://34.229.134.34:9000"
         SONAR_SCANNER_HOME = tool 'SonarQube Scanner'
-        SONAR_TOKEN = credentials('sonarqube-creds')
     }
 
     stages {
@@ -37,13 +35,17 @@ pipeline {
                     reuseNode true
                 }
             }
+            environment {
+                SONAR_HOST_URL = 'http://34.229.134.34:9000'
+                SONAR_TOKEN = credentials('sonarqube-creds')
+            }
             steps {
                 sh '''
-                ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                  -Dsonar.projectKey=my-project \
-                  -Dsonar.sources=build \
-                  -Dsonar.host.url=${SONAR_HOST_URL} \
-                  -Dsonar.login=${SONAR_TOKEN}
+                sonar-scanner \
+                -Dsonar.projectKey=my-project \
+                -Dsonar.sources=. \
+                -Dsonar.host.url=$SONAR_HOST_URL \
+                -Dsonar.login=$SONAR_TOKEN
                 '''
             }
         }
