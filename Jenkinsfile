@@ -20,11 +20,15 @@ pipeline {
                     args "-u root --rm --entrypoint='' --network=host"
                 }
             }
+            environment {
+                CLUSTER_NAME = 'Jenkins-App-Prod'
+            }
             steps {
                 sh '''
                 yum install jq -y
                 REVISION_VALUE=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-Prod.json | jq '.taskDefinition.revision')
-                aws ecs update-service --cluster Jenkins-App-Prod --service Jenkins-App-Service-Prod --task-definition LearnJenkinsApp-TaskDefinition-Prod:$REVISION_VALUE
+                aws ecs update-service --cluster $CLUSTER_NAME --service Jenkins-App-Service-Prod --task-definition LearnJenkinsApp-TaskDefinition-Prod:$REVISION_VALUE
+                aws ecs wait services-stable --cluster Jenkins-App-Prod --services Jenkins-App-Service-Prod
                 '''
             }
         }
