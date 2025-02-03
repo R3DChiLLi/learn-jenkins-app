@@ -17,13 +17,14 @@ pipeline {
                 docker {
                     image 'amazon/aws-cli'
                     reuseNode true
-                    args "--rm --entrypoint='' --network=host"
+                    args "-u root --rm --entrypoint='' --network=host"
                 }
             }
             steps {
                 sh '''
-                
-                aws ecs update-service --cluster Jenkins-App-Prod --service Jenkins-App-Service-Prod --task-definition LearnJenkinsApp-TaskDefinition-Prod:2
+                yum install jq -y
+                REVISION_VALUE=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-Prod.json | jq '.taskDefinition.revision')
+                aws ecs update-service --cluster Jenkins-App-Prod --service Jenkins-App-Service-Prod --task-definition LearnJenkinsApp-TaskDefinition-Prod:$REVISION_VALUE
                 '''
             }
         }
