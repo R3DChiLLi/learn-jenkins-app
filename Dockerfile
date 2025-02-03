@@ -1,3 +1,3 @@
-FROM mcr.microsoft.com/playwright:v1.39.0-jammy
+FROM nginx:1.27-alpine
 
-RUN npm install netlify-cli node-jq serve -g
+COPY build usr/share/nginx/html

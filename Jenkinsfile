@@ -7,31 +7,12 @@ pipeline {
         REACT_APP_VERSION = "1.0.$BUILD_ID"
         SONAR_SCANNER_HOME = tool 'SonarQube Scanner'
         AWS_DEFAULT_REGION = 'us-east-1'
-
+        CLUSTER_NAME = 'Jenkins-App-Prod'
+        SERVICE_NAME = 'Jenkins-App-Service-Prod'
+        TASK_DEFINITION = 'LearnJenkinsApp-TaskDefinition-Prod'
     }
 
     stages {
-
-        stage("Deploy to AWS") {
-            agent {
-                docker {
-                    image 'amazon/aws-cli'
-                    reuseNode true
-                    args "-u root --rm --entrypoint='' --network=host"
-                }
-            }
-            environment {
-                CLUSTER_NAME = 'Jenkins-App-Prod'
-            }
-            steps {
-                sh '''
-                yum install jq -y
-                REVISION_VALUE=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-Prod.json | jq '.taskDefinition.revision')
-                aws ecs update-service --cluster $CLUSTER_NAME --service Jenkins-App-Service-Prod --task-definition LearnJenkinsApp-TaskDefinition-Prod:$REVISION_VALUE
-                aws ecs wait services-stable --cluster Jenkins-App-Prod --services Jenkins-App-Service-Prod
-                '''
-            }
-        }
 
         stage('Build') {
             agent {
@@ -52,6 +33,31 @@ pipeline {
             }
         }
 
+        stage("Building Docker Image") {
+            steps {
+                sh '''
+                docker build -t jenkins-app .
+                '''
+            }
+        }
+
+        stage("Deploy to AWS") {
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    reuseNode true
+                    args "-u root --rm --entrypoint='' --network=host"
+                }
+            }
+            steps {
+                sh '''
+                yum install jq -y
+                REVISION_VALUE=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-Prod.json | jq '.taskDefinition.revision')
+                aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --task-definition ${TASK_DEFINITION}:$REVISION_VALUE
+                aws ecs wait services-stable --cluster Jenkins-App-Prod --services Jenkins-App-Service-Prod
+                '''
+            }
+        }
 
         // stage('SonarQube Analysis') {
         //     agent {
