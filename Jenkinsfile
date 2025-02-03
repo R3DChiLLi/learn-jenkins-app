@@ -38,13 +38,13 @@ pipeline {
                 docker {
                     image 'amazon/aws-cli'
                     reuseNode true
-                    args "-v /var/run/docker.sock:/var/run/docker.sock -u root --rm --entrypoint='' --network=host"
+                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint='' --network=host"
                 }
             }            
             steps {
                 sh '''
                 amazon-linux-extras install docker
-                docker build -t jenkins-app .
+                docker build -t myjenkinsapp .
                 '''
             }
         }
