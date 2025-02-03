@@ -5,9 +5,26 @@ pipeline {
         NETLIFY_SITE_ID = '339ff62d-959d-4e7b-a397-631a4ba894db'
         NETLIFY_AUTH_TOKEN = credentials('netlify-id')
         REACT_APP_VERSION = "1.0.$BUILD_ID"
+        SONAR_SCANNER_HOME = tool 'SonarQube Scanner'
     }
 
     stages {
+
+        // stage("Deploy to AWS") {
+        //     agent {
+        //         docker {
+        //             image 'amazon/aws-cli'
+        //             reuseNode true
+        //             args "--rm --entrypoint='' --network=host"
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //         aws ecs register-task-definition --cli-input-json file://aws/task-definition-Prod.json
+        //         '''
+        //     }
+        // }
+
         stage('Build') {
             agent {
                 docker {
@@ -27,20 +44,29 @@ pipeline {
             }
         }
 
-        stage("AWS") {
-            agent {
-                docker {
-                    image 'amazon/aws-cli'
-                    reuseNode true
-                    args "--rm --entrypoint='' --network=host"
-                }
-            }
-            steps {
-                sh '''
-                aws s3 sync build s3://bucket-for-jenkins123
-                '''
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     agent {
+        //         docker {
+        //             image 'sonarsource/sonar-scanner-cli'
+        //             reuseNode true
+        //         }
+        //     }
+        //     environment {
+        //         SONAR_HOST_URL = 'http://34.229.134.34:9000'
+        //         SONAR_TOKEN = credentials('sonarqube-creds')
+        //     }
+        //     steps {
+        //         sh '''
+        //         sonar-scanner \
+        //         -Dsonar.projectKey=my-project \
+        //         -Dsonar.sources=. \
+        //         -Dsonar.host.url=$SONAR_HOST_URL \
+        //         -Dsonar.login=$SONAR_TOKEN
+        //         '''
+        //     }
+        // }
+
+
 
         stage('Tests')
         {
