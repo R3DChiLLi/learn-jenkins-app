@@ -43,7 +43,6 @@ pipeline {
             }            
             steps {
                 sh '''
-                amazon-linux-extras install docker
                 docker build -t myjenkinsapp .
                 '''
             }
@@ -54,12 +53,11 @@ pipeline {
                 docker {
                     image 'my-aws-cli'
                     reuseNode true
-                    args "-u root --rm --entrypoint='' --network=host"
+                    args "--rm --entrypoint='' --network=host"
                 }
             }
             steps {
                 sh '''
-                yum install jq -y
                 REVISION_VALUE=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-Prod.json | jq '.taskDefinition.revision')
                 aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --task-definition ${TASK_DEFINITION}:$REVISION_VALUE
                 aws ecs wait services-stable --cluster Jenkins-App-Prod --services Jenkins-App-Service-Prod
